@@ -1,129 +1,117 @@
----
-page_type: sample
-languages:
-- csharp
-- cpp
-- cppwinrt
-products:
-- windows
-- windows-uwp
-urlFragment: BluetoothLE
-extendedZipContent:
-- path: SharedContent
-  target: SharedContent
-- path: LICENSE
-  target: LICENSE
-description: "Shows how to use the Windows Bluetooth LE APIs to act either as a BLE client or server."
----
+Planificación:
 
-<!---
-  category: DevicesSensorsAndPower
-  samplefwlink: http://go.microsoft.com/fwlink/p/?LinkId=820786
--->
+Primer hito: Creación de la base de la solución, es decir, la creación de los proyectos involucrados.
+Segundo hito: Creación del modelo y la base de datos mediante entityframework. Aqui se creó el motor de persistencia.
+Tercer hito: Implementación de los patrones de repositorio y UnitOfWork.
+Cuarto hito: Implementación del patron CQRS.
+Quinto hito: Creación de los servicios basandonos en la logica creada en la implementación CQRS.
+Secto hito: Creación de las pruebas unitarias.
 
-# Bluetooth Low Energy sample
+Arquitectura utilizada
 
-Shows how to use the Windows Bluetooth LE APIs to act either as a BLE client or server. 
+Para desarrollar esta API se eligió la Arquitectura DDD, en esta arquitectura el centro del proyecto es el dominio. Partiendo de esta base, el area de conocimiento, las reglas de negocio y su logica se definen con la finalidad de crear, almacenar, modificar y consultar los datos de dicho dominio. En este caso el dominio es unicamente las acciones, como se indicó en los requerimientos de la prueba tecnica.
+Para completar la Arquitectura DDD se utilizaron distintos patrones de diseño de software con la finalidad de llevar a cabo una aplicación flexible y escalable, y en caso de que crezca se evita el codigo espaguetti, muy común en desarrollos monoliticos.
+Los patrones que se utilizaron fueron:
+- Patron de repositorio: Es un patrón de diseño utilizado en el desarrollo de software que proporciona una forma de administrar la lógica de acceso a los datos en una ubicación centralizada. Consiste en la combinación entre interfaces, que indican que debe hacer una acción dada (llamar a un registro por su id) y una clase, la cual contiene el cuerpo necesario para que la acción se lleve a cabo.
+- Patron Unit Of Work: Este patron es un orquestador de repositorios.
+- Patron CQRS: es un patrón de diseño de software que nos muestra cómo separar la lógica de nuestras aplicaciones para separar las lecturas de las escrituras.
 
-> **Note:** This sample is part of a large collection of UWP feature samples. 
-> You can download this sample as a standalone ZIP file
-> [from docs.microsoft.com](https://docs.microsoft.com/samples/microsoft/windows-universal-samples/bluetoothle/),
-> or you can download the entire collection as a single
-> [ZIP file](https://github.com/Microsoft/Windows-universal-samples/archive/master.zip), but be 
-> sure to unzip everything to access shared dependencies. For more info on working with the ZIP file, 
-> the samples collection, and GitHub, see [Get the UWP samples from GitHub](https://aka.ms/ovu2uq). 
-> For more samples, see the [Samples portal](https://aka.ms/winsamples) on the Windows Dev Center. 
+Estos patrones permiten que cada actividad llevada a cabo  por la entidad, en este caso, las acciones, tengan su propia linea de desarrollo sin interferir entre si. Es decir, la creación de una acción, es desarrollada independiente de la actualización de la acción, garantizando asi la separación de logica de negocio. 
+La aplicación de estos patrones garantiza una buena practica, que es la de crear servicios (a nivel de los controllers) limpios de cualquier tipo de logica, dejando las reglas de negocios en otras capas.
 
-## Client
+La solución se dividió en distintos proyectos, los cuales son:
 
-Shows how to act as a client to communicate with a Bluetooth Low Energy (LE) device
-using the Bluetooth GATT protocol. Acts as a GATT client to access nearby GATT servers like
-heart rate sensors or temperature sensors.
+-  La API, contiene los servicios que será consumidos por los clientes.
+-  Application y Models, que se encuentran en una carpeta llamada Core. Se llama Core, porque es el centro real de la solución. Application contiene definidas las reglas de negocio, mientras que Models contiene las entidades a utilizar como tal, modelos de las tablas que se encuentran en la base de datos.Esta capa viene siendo la de de servicoos o logicas de negocios.
+- Infraestrure. Este proyecto, representa la capa que contiene el motor de persistencia, y contiene la base de la logica utilizada en el proyecto application. Esta capa viene siendo la  de acceso a datos.
+- Test. En este proyecto se llevan a cabo las pruebas unitarias para evaluar la logica creada como tal en la capa de servicios. En este caso se toma en cuenta la estructura de archivos y métodos creados basados en el patron de diseño CQRS, utilizado en dicha capa de servicios.
 
-Specifically, this sample shows how to:
+Requisitos
 
-- Enumerate nearby Bluetooth LE devices
-- Query for supported services
-- Query for supported characteristics
-- Read and write data
-- Subscribe to indicate and notify events
+Aunque mucho de los requisitos no funcionales fueron señalados de manera indirecta en el parrafo anterior, se detallarán a continuación:
 
-## Server
-As of build 15003 and above, Bluetooth LE GATT Server APIs are available.
-This sample can be used to advertise support for CalcService - a custom service that allows a remote client to write to two operand characteristics
-and an operator and read the result. 
+- Implementación de distintos patrones de diseño con la finalidad de crear una aplicación flexible y escalable. Y un código desacoplado y facil de entender.
+- Se desarrolló una aplicación con un manejo detallado de excepciones.
+- Se dearrolló una API que devuelve, según sea el tipo de respuesta (200, 400, 401, 404, 500, etc), un formato con 4 propiedades, como por ejemplo:
+{
+    "success": true,
+    "codeResult": "200",
+    "message": "Login succesful",
+    "data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJncmVnb3JkdWFydGVtYXJ0aW5lekBnbWFpbC5jb20iLCJqdGkiOiI3NmM1MzhkMy1lNDA0LTQ3ZGUtYWRmNC00ZjNmZmM0NDc0NjYiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTczNzQzMTIyMCwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NzA3MS8iLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MDcxLyJ9.mkvMaXbEEEsUOjKtS3baRlb3qWanXyRR1nHXdx49OEE"
+}
 
-This samples shows how to:
-- Initialize and publish a custom service/characteristic hierarchy 
-- Implement event handlers to handle incoming read/write requests
-- Notify connected clients of a characteristic value change
+Este ejemplo muestra las propiedades que contiene la respuesta, success, que indica si el servicio se ejecutó correctamente de cara a la logica del negocio, coderesult, el cual tendrá el statuscode de la respuesta, message, que tiene un mensaje de ayuda para guiar al cliente y data, que contiene como tal la información que se ha solicitado, en caso de sea una respuesta statuscode 200.
 
-## More Details
-Search for "BT_Code" to find the portions of the sample that are particularly
-relevant to Bluetooth.
-Note in particular the "bluetooth" capability declaration in the manifest.
+Otro ejemplo.
 
-**Note** The Windows universal samples require Visual Studio to build and Windows 10 to execute.
+{
+    "success": false,
+    "codeResult": "404",
+    "message": "No se encontró data",
+    "data": null
+}
 
-To obtain information about Windows 10 development, go to the [Windows Dev Center](http://go.microsoft.com/fwlink/?LinkID=532421)
+en este caso es una respuesta donde no se encontró datos que coincidieran con la solicitud.
 
-To obtain information about Microsoft Visual Studio and the tools for developing Windows apps, go to [Visual Studio](http://go.microsoft.com/fwlink/?LinkID=532422)
+Requisitos funcionales
 
-## Related topics
+- Creación de los servicios:
 
-### Samples
+- Creación de acción
+- Actualizar Acción
+- Eliminar Acción (solo será utilizado por el usuario Admin. Explicado mas abajo.)
+- Cambiar Estado
+- Listar Acciones
+- Listar Acciones por Estado
+- Listar Acciones por descripción de acción
 
-[Bluetooth Rfcomm](../BluetoothRfcommChat)
+Todos los servicios para poder ser utilizados deben utilizar un token, que se genera con el servicio siguiente:
 
-[Bluetooth Advertisement](../BluetoothAdvertisment)
+- Login para generar Token.
 
-[Device Enumeration and Pairing](../DeviceEnumerationAndPairing)
+Se crearon por base de datos dos usuarios que serán los unicos que tendrá el sistema:
 
-### Reference
+{
+  "email": "gregorduartemartinez@gmail.com",
+  "password": "Barcelona576*",
+  "role": "Admin"
+}
+ y
 
-[Windows.Devices.Bluetooth namespace](https://msdn.microsoft.com/library/windows/apps/windows.devices.bluetooth.aspx)
+ {
+  "email": "gabrielduartemartinez@gmail.com",
+  "password": "Cine576*",
+  "role": "Reader"
+}
 
-[Windows.Devices.Bluetooth.GenericAttributeProfile namespace](https://msdn.microsoft.com/library/windows/apps/windows.devices.bluetooth.genericattributeprofile.aspx)
+El usuario con role Admin, podrá consumir cualquiera de los servicios, mientras que el usuario con role Reader, tendrá restricciones para ejecutar el servicio de eliminar acción.
 
-[Windows.Devices.Enumeration namespace](https://msdn.microsoft.com/library/windows/apps/windows.devices.enumeration.aspx)
 
-### Conceptual
+Requerimientos Técnicos
 
-* Documentation
-  * [Bluetooth GATT Client](https://msdn.microsoft.com/windows/uwp/devices-sensors/gatt-client)
-  * [Bluetooth GATT Server](https://msdn.microsoft.com/windows/uwp/devices-sensors/gatt-server)
-  * [Bluetooth LE Advertisements](https://docs.microsoft.com/windows/uwp/devices-sensors/ble-beacon)
-* [Windows Bluetooth Core Team Blog](https://blogs.msdn.microsoft.com/btblog/)
-* Videos from Build 2017
-  * [Introduction to the Bluetooth LE Explorer app](https://channel9.msdn.com/Events/Build/2017/P4177)
-    * [Source code](https://github.com/Microsoft/BluetoothLEExplorer)
-    * [Install it from the Microsoft Store](https://www.microsoft.com/store/apps/9n0ztkf1qd98)
-  * [Unpaired Bluetooth LE Device Connectivity](https://channel9.msdn.com/Events/Build/2017/P4178)
-  * [Bluetooth GATT Server](https://channel9.msdn.com/Events/Build/2017/P4179)
+Se utilizó .Net 8. como framework.
+Se utilizó C# como lenguaje de programación.
+Se utilizó Visual Studio como IDE para desarrollar la aplicación.
+Para la creación de la base de datos se utilizó SQL Server en Azure.
 
-## System requirements
+Docker
 
-**Client:** Windows 10 Anniversary Edition
+La versión de docker utilizada es 27.4.0
+la versión de docker Compose es v2.31.0-desktop.2
 
-**Server:** Windows Server 2016 Technical Preview
+El archivo docker-compose.yml levanta tanto la Api como la base de datos SQL Server.
 
-**Phone:** Windows 10 Anniversary Edition
+Para poder ejecutar el contenedor con el comando  localmente, será necesario,
+ir a power shell o a la linea de comandos y colocarnos en la raiz del proyecto (ejemplo: C:\Users\Lenovo\source\repos\PruebaGregor) y ejecutar el comando docker-compose up -d. 
 
-## Build the sample
+Luego se recomienda utilizar Postman para hacer uso de los servicios.
 
-1. If you download the samples ZIP, be sure to unzip the entire archive, not just the folder with the sample you want to build. 
-2. Start Microsoft Visual Studio and select **File** \> **Open** \> **Project/Solution**.
-3. Starting in the folder where you unzipped the samples, go to the Samples subfolder, then the subfolder for this specific sample, then the subfolder for your preferred language (C++, C#, or JavaScript). Double-click the Visual Studio Solution (.sln) file.
-4. Press Ctrl+Shift+B, or select **Build** \> **Build Solution**.
+Gestión de repositorios (GIT)
 
-## Run the sample
+Se siguieron las indicaciones. 
+Se hicieron Commits limpios y descriptivos y se hizo uso de branches para organizar el trabajo.
 
-The next steps depend on whether you just want to deploy the sample or you want to both deploy and run it.
 
-### Deploying the sample
 
-- Select Build > Deploy Solution. 
 
-### Deploying and running the sample
 
-- To debug the sample and then run it, press F5 or select Debug >  Start Debugging. To run the sample without debugging, press Ctrl+F5 or selectDebug > Start Without Debugging. 

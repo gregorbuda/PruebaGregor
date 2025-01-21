@@ -133,8 +133,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello World!");
 
-//app.Run("http://0.0.0.0:5001");
+app.Run("http://0.0.0.0:5001");
 
 app.Run();

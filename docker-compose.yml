@@ -1,0 +1,26 @@
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7652:5001"
+    environment:
+      DB_HOST: tarsusprueba.database.windows.net
+      DB_USER: Ulises
+      DB_PASSWORD: Barcelona576*
+      DB_NAME: PruebaTecnica
+    depends_on:
+      - mssql
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+    container_name: sql_server_test
+    environment:
+      SA_PASSWORD: "Barcelona576*"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data/mssql:/var/opt/mssql
