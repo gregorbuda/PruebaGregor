@@ -101,7 +101,8 @@ la versión de docker Compose es v2.31.0-desktop.2
 
 El archivo docker-compose.yml levanta tanto la Api como la base de datos SQL Server.
 
-Para poder ejecutar el contenedor con el comando  localmente, será necesario,
+Para poder ejecutar el contenedor con el comando  localmente, será necesario, primero, clonar la aplicación desde eñ
+respositorio, mediante esta url https://github.com/gregorbuda/PruebaGregor.git. Luego
 ir a power shell o a la linea de comandos y colocarnos en la raiz del proyecto (ejemplo: C:\Users\Lenovo\source\repos\PruebaGregor) y ejecutar el comando docker-compose up -d. 
 
 Luego se recomienda utilizar Postman para hacer uso de los servicios.
