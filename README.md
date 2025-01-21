@@ -99,10 +99,9 @@ Docker
 La versión de docker utilizada es 27.4.0
 la versión de docker Compose es v2.31.0-desktop.2
 
-El archivo docker-compose.yml levanta tanto la Api como la base de datos SQL Server.
+El archivo docker-compose.yml levanta tanto la Api como la base de datos SQL Server. La aplicación levantará en el puerto 7652. (http://localhost:7652), tal y como esta indicado dicho archivo docker-compose.yml.
 
-Para poder ejecutar el contenedor con el comando  localmente, será necesario, primero, clonar la aplicación desde eñ
-respositorio, mediante esta url https://github.com/gregorbuda/PruebaGregor.git. Luego
+Para poder ejecutar el contenedor con el comando  localmente, será necesario, primero, clonar la aplicación desde el repositorio, mediante esta url https://github.com/gregorbuda/PruebaGregor.git. Luego
 ir a power shell o a la linea de comandos y colocarnos en la raiz del proyecto (ejemplo: C:\Users\Lenovo\source\repos\PruebaGregor) y ejecutar el comando docker-compose up -d. 
 
 Luego se recomienda utilizar Postman para hacer uso de los servicios.
@@ -111,6 +110,94 @@ Gestión de repositorios (GIT)
 
 Se siguieron las indicaciones. 
 Se hicieron Commits limpios y descriptivos y se hizo uso de branches para organizar el trabajo.
+
+
+Lista de servicios con sus parametros:
+
+Servcio de generación de token
+
+Tipo Post
+
+http://localhost:7652/api/User/Login
+
+body request:
+
+{
+  "email": "string",
+  "password": "string",
+  "role": "string"
+}
+
+Creación de acción
+
+Tipo Post
+
+http://localhost:7652/api/Accion/CreacionAccion
+
+body request
+
+{
+  "descripcionAccion": "string",
+  "estado": false,
+  "eliminar": false
+}
+
+Actualización de acción
+
+Tipo Put
+
+http://localhost:7652/api/Accion/ActualizarAccion
+
+body request
+
+{
+  "id": "string",
+  "descripcionAccion": "string",
+  "estado": true,
+  "eliminar": true
+}
+
+Eliminar Acción (solo será utilizado por el usuario Admin. Explicado mas abajo.)
+
+Tipo Put
+
+http://localhost:7652/api/Accion/EliminarAccion
+
+body request
+
+{
+  "id": "string"
+}
+
+Cambiar Estado
+
+Tipo Put
+
+http://localhost:7652/api/Accion/CambiarEstado
+
+body request
+{
+  "id": "string"
+}
+
+Lista de acciones
+
+Tipo Get
+
+http://localhost:5001/api/Accion/ListarAcciones
+
+Lista de acciones por estado
+
+tipo Get
+
+http://localhost:5001/api/Accion/ListarAccionesPorEstado/ parametro status(true-false)
+
+Lista de acciones por descripción de acción
+
+tipo get
+
+http://localhost:5001/api/Accion/ListarAccionesPorAccion/parametro acción
+
 
 
 
