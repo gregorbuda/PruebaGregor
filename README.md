@@ -101,6 +101,8 @@ la versión de docker Compose es v2.31.0-desktop.2
 
 El archivo docker-compose.yml levanta tanto la Api como la base de datos SQL Server. La aplicación levantará en el puerto 7652. (http://localhost:7652), tal y como esta indicado dicho archivo docker-compose.yml.
 
+Para poder acceder al sistema, es necesario crear una regla de firewall en Azure, dando permisos a la IP de la pc o servicio que requiera accesos.
+
 Para poder ejecutar el contenedor con el comando  localmente, será necesario, primero, clonar la aplicación desde el repositorio, mediante esta url https://github.com/gregorbuda/PruebaGregor.git. Luego
 ir a power shell o a la linea de comandos y colocarnos en la raiz del proyecto (ejemplo: C:\Users\Lenovo\source\repos\PruebaGregor) y ejecutar el comando docker-compose up -d. 
 
