@@ -21,10 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\" />
     <Folder Include="Features\" />
     <Folder Include="Mappings\" />
-    <Folder Include="Security\" />
   </ItemGroup>
 
 </Project>
